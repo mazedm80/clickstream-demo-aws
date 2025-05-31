@@ -9,6 +9,14 @@ resource "aws_glue_catalog_table" "event_glue" {
   table_type = "EXTERNAL_TABLE"
   parameters = {
     classification = "parquet"
+    "projection.enabled" = "true"
+    "projection.year.type" = "integer"
+    "projection.year.range" = "2020,2023"
+    "projection.month.type" = "integer"
+    "projection.month.range" = "1,12"
+    "projection.day.type" = "integer"
+    "projection.day.range" = "1,31"
+    "storage.location.template" = "s3://${var.bucket_name}/clickevent/year=$${year}/month=$${month}/day=$${day}/"
   }
 
   storage_descriptor {
@@ -57,6 +65,18 @@ resource "aws_glue_catalog_table" "event_glue" {
       name = "user_session"
       type = "varchar(10)"
     }
+  }
+  partition_keys {
+    name = "year"
+    type = "string"
+  }
+  partition_keys {
+    name = "month"
+    type = "string"
+  }
+  partition_keys {
+    name = "day"
+    type = "string"
   }
 }
 

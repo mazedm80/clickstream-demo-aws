@@ -15,7 +15,7 @@ resource "aws_kinesis_firehose_delivery_stream" "clickevent" {
 
         parameters {
           parameter_name  = "MetadataExtractionQuery"
-          parameter_value = "{event_type: .event_type, yy: .event_time[0:4], mm: .event_time[5:7], dd: .event_time[8:10]}"
+          parameter_value = "{yy: .event_time[0:4], mm: .event_time[5:7], dd: .event_time[8:10]}"
         }
 
         parameters {
@@ -28,7 +28,7 @@ resource "aws_kinesis_firehose_delivery_stream" "clickevent" {
       enabled = "true"
     }
 
-    prefix = "clickevent/year=!{partitionKeyFromQuery:yy}/month=!{partitionKeyFromQuery:mm}/day=!{partitionKeyFromQuery:dd}/event_type=!{partitionKeyFromQuery:event_type}/"
+    prefix = "clickevent/year=!{partitionKeyFromQuery:yy}/month=!{partitionKeyFromQuery:mm}/day=!{partitionKeyFromQuery:dd}/"
     error_output_prefix = "error/clickevent/"
     
     compression_format = "UNCOMPRESSED"    
