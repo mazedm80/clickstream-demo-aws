@@ -41,14 +41,13 @@ def convert_batch_records(chunk: pd.DataFrame) -> List[Dict[str, str]]:
     
     records = []
     for _, row in chunk.iterrows():
+        if row.isnull().any():
+            continue
         record = row.to_dict()
 
         if 'event_time' in record:
             record["event_time"] = convert_datetime_to_iso(record["event_time"])
         
-        for key, value in record.items():
-            if pd.isna(value):
-                record[key] = None
         record["event_type"] = record.get("event_type", "unknown")
         records.append(record)
 
@@ -103,7 +102,8 @@ def main(path: Path, chunksize: int, stream_name: str, aws_region: str):
             records = convert_batch_records(chunk)
             firehose_client.put_record_batch(records)
             logger.info(f'Processed {len(records)} records from the chunk.')
-            time.sleep(60)  # Simulate some processing time
+            # Simulate some processing time
+            time.sleep(60)
     except Exception as e:
         logger.error(f'An error occurred: {e}')
     
