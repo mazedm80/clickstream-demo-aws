@@ -35,7 +35,7 @@ module "firehose" {
 }
 
 module "glue" {
-  source = "./modules/glue"
-  env    = var.env
+  source      = "./modules/glue"
+  env         = var.env
   bucket_name = module.s3_bucket.bucket_name
 }

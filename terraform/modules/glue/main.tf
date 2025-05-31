@@ -12,7 +12,7 @@ resource "aws_glue_catalog_table" "event_glue" {
   }
 
   storage_descriptor {
-    location      = "s3://${var.bucket_name}/${var.env}/clickevent/"
+    location      = "s3://${var.bucket_name}/clickevent/"
     input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
 
