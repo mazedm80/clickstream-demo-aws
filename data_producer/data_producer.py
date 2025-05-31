@@ -31,7 +31,7 @@ def convert_datetime_to_iso(date_str: str) -> str:
     
     try:
         dt = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S %Z')
-        return dt.isoformat()
+        return dt.isoformat(sep=' ')
     except ValueError:
         logging.error(f"Invalid date format: {date_str}")
         return date_str
@@ -45,14 +45,10 @@ def convert_batch_records(chunk: pd.DataFrame) -> List[Dict[str, str]]:
 
         if 'event_time' in record:
             record["event_time"] = convert_datetime_to_iso(record["event_time"])
-            record["date"] = record["event_time"].split('T')[0]
         
         for key, value in record.items():
             if pd.isna(value):
                 record[key] = None
-            else:
-                record[key] = str(value)
-        print(f"Time: {datetime.now().isoformat()} - Record: {record}")
         record["event_type"] = record.get("event_type", "unknown")
         records.append(record)
 
@@ -94,21 +90,20 @@ class FirehoseClient():
 @click.command()
 @click.option('--path', type=click.Path(exists=True, dir_okay=False, path_type=Path), required=True, help='Path to the CSV file.')
 @click.option('--chunksize', type=int, default=1000, help='Number of rows per chunk to process.')
-# @click.option('--stream_name', type=str, required=True, help='Name of the Firehose stream to send data to.')
-# @click.option('--aws_region', type=str, required=True, help='AWS region for Firehose client.')
-def main(path: Path, chunksize: int):
+@click.option('--stream_name', type=str, required=True, help='Name of the Firehose stream to send data to.')
+@click.option('--aws_region', type=str, required=True, help='AWS region for Firehose client.')
+def main(path: Path, chunksize: int, stream_name: str, aws_region: str):
     """Main function to load a CSV file in chunks and process each chunk."""
     
     logger.info(f'Starting to process the CSV file at {path} with chunksize {chunksize}.')
+    firehose_client = FirehoseClient(stream_name, aws_region)
     try:
         csv_iterator = load_csv_into_iterator(path, chunksize)
         for n,chunk in enumerate(csv_iterator):
-            if n > 3:
-                logger.info('Processed 3 chunks, stopping further processing for demonstration purposes.')
-                break
             records = convert_batch_records(chunk)
+            firehose_client.put_record_batch(records)
             logger.info(f'Processed {len(records)} records from the chunk.')
-        time.sleep(60)  # Simulate some processing time
+            time.sleep(60)  # Simulate some processing time
     except Exception as e:
         logger.error(f'An error occurred: {e}')
     

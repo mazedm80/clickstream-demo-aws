@@ -1,5 +1,4 @@
-# 
-resource "aws_s3_bucket" "name" {
+resource "aws_s3_bucket" "clickevent" {
     bucket = "click-events-${var.env}-bucket-${random_id.suffix.hex}"
     tags = {
         name = "Click-events bucket"
@@ -15,4 +14,12 @@ resource "random_id" "suffix" {
 variable "env" {
     description = "Deployment environment"
     type = string
+}
+
+output "bucket_name" {
+  value = aws_s3_bucket.clickevent.bucket
+}
+
+output "bucket_arn" {
+  value = aws_s3_bucket.clickevent.arn
 }
