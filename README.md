@@ -75,3 +75,6 @@ WHERE year = '2023' AND month = '10' AND day = '01';
 ```bash
 terraform destroy -var-file=environments/dev.tfvars
 ```
+## Data Source
+<!-- https://www.kaggle.com/datasets/mkechinov/ecommerce-events-history-in-electronics-store -->
+The click events data is sourced from a Kaggle dataset (link: [Ecommerce Events History in Electronics Store](https://www.kaggle.com/datasets/mkechinov/ecommerce-events-history-in-electronics-store)). The `click_events.csv` file contains only 20k rows for demonstration purposes. You can replace it with a larger dataset as needed.
