@@ -63,13 +63,14 @@ Make sure to replace buffering_interval and buffering_size in the Firehose confi
 - After the data is ingested, you can query it using AWS Athena.
 - The data in S3 partitioned by `year`, `month`, and `day` which looks like this:
 ```
-s3://your-bucket-name/clickstream/year=2023/month=10/day=01/
+s3://your-bucket-name/clickevent/year=2023/month=10/day=01/
 ```
 - You can use the following SQL query to retrieve the data:
 ```sql
 SELECT * FROM "your_database_name"."your_table_name"
 WHERE year = '2023' AND month = '10' AND day = '01';
 ```
+>*The year, month, and day values should match the partitioning scheme used in the S3 bucket.*
 ### Cleaning Up
 - To clean up the resources created by Terraform, run:
 ```bash
